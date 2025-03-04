@@ -14,7 +14,7 @@ app.engine(
 app.set("view engine", "hbs");
 app.set("views", "views");
 
-//app.use(bodyParser, bodyparser.urlencoded({ extended }));
+app.use(bodyParser, bodyparser.urlencoded({ extended }));
 app.use(bodyparser.urlencoded({ extended: true }));
 app.get("/", async (req, res) => {
   let database = await dbo.getDatabase();
