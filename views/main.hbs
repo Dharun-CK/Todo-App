@@ -1,0 +1,125 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <title>Task App-MongoDB</title>
+    <style>
+      body { background-color: #f8f9fa; color: #495057; font-family: 'Arial',
+      sans-serif; transition: background-color 0.5s, color 0.5s; }
+      body.night-mode { background-color: #343a40; color: #ffffff; } h1, h2 {
+      color: #007bff; } .container { margin-top: 30px; border-radius: 15px;
+      background: #ffffff; padding: 30px; box-shadow: 0 4px 20px rgba(0, 0, 0,
+      0.1); position: relative; overflow: hidden; } .form-control {
+      border-radius: 10px; transition: border-color 0.3s; } .form-control:focus
+      { border-color: #007bff; box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); }
+      .btn-custom { background-color: #007bff; color: #fff; border-radius: 10px;
+      transition: background-color 0.3s; } .btn-custom:hover { background-color:
+      #0056b3; } ul { list-style: none; padding: 0; } li { font-size: 18px;
+      padding: 10px; border: 1px solid #007bff; border-radius: 10px; margin: 5px
+      0; background-color: #e9ecef; transition: transform 0.2s; } li:hover {
+      transform: scale(1.02); } li a { color: #007bff; margin-left: 10px;
+      text-decoration: none; } li a:hover { text-decoration: underline; } footer
+      { margin-top: 20px; color: #007bff; } .mouse-trail { position: absolute;
+      width: 10px; height: 10px; background: rgba(0, 123, 255, 0.5);
+      border-radius: 50%; pointer-events: none; transition: transform 0.1s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="text-center">Task APP</h1>
+      <div class="text-center mb-3">
+        {{message}}
+      </div>
+      {{#if edit_id}}
+        <h2 class="text-center">Rearrange The Task</h2>
+        <form method="post" action="/update_book/{{edit_id}}">
+          <div class="mb-3">
+            <label for="title" class="form-label">Action</label>
+            <input
+              class="form-control"
+              type="text"
+              id="title"
+              name="title"
+              value="{{edit_book.title}}"
+              aria-label="Task Title"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="author" class="form-label">Description</label>
+            <input
+              class="form-control"
+              type="text"
+              id="author"
+              name="author"
+              value="{{edit_book.author}}"
+              aria-label="Task Description"
+              required
+            />
+          </div>
+          <button class="btn btn-custom" type="submit">Rearrange</button>
+        </form>
+        <br />
+      {{else}}
+        <h2 class="text-center">Create New Task</h2>
+        <form method="post" action="/store_book">
+          <div class="mb-3">
+            <label for="title" class="form-label">Action</label>
+            <input
+              class="form-control"
+              type="text"
+              name="title"
+              id="title"
+              required
+              aria-label="Task Title"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="author" class="form-label">Description</label>
+            <input
+              class="form-control"
+              type="text"
+              name="author"
+              id="author"
+              required
+              aria-label="Task Description"
+            />
+          </div>
+          <button type="submit" class="btn btn-custom">Submit</button>
+        </form>
+      {{/if}}
+      <section id="main" class="mt-4">
+        <h2 class="text-center">List of Tasks</h2>
+        <ul class="mt-3">
+          {{#each employees}}
+            <li>{{this.title}}
+              -
+              {{this.author}}
+              <a href="/?edit_id={{this._id}}">Edit</a>
+              <a
+                href="/?delete_id={{this._id}}"
+                class="did"
+                onclick="return confirm('Are You Sure Want to Delete?')"
+              >Delete</a>
+            </li>
+          {{/each}}
+        </ul>
+      </section>
+    </div>
+    <footer class="text-center mt-4">
+      <p>&copy; 2024 Ck. All rights reserved.</p>
+    </footer>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
