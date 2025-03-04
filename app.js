@@ -76,5 +76,3 @@ app.post("/update_book/:edit_id", async (req, res) => {
   await collection.updateOne({ _id: new ObjectId(edit_id) }, { $set: book });
   return res.redirect("/?status=2");
 });
-
-app.listen(8002, () => console.log("Listening to 8002 Port"));
