@@ -14,7 +14,7 @@ app.engine(
 app.set("view engine", "hbs");
 app.set("views", "views");
 
-app.use(bodyParser, bodyparser.urlencoded({ extended }));
+//app.use(bodyParser, bodyparser.urlencoded({ extended }));
 app.use(bodyparser.urlencoded({ extended: true }));
 app.get("/", async (req, res) => {
   let database = await dbo.getDatabase();
@@ -76,4 +76,4 @@ app.post("/update_book/:edit_id", async (req, res) => {
   await collection.updateOne({ _id: new ObjectId(edit_id) }, { $set: book });
   return res.redirect("/?status=2");
 });
-module.exports=app;
+//module.exports=app;
