@@ -1,79 +1,70 @@
 const express = require("express");
-const app = express();
-const bodyparser = require("body-parser");
-const exhbs = require("express-handlebars");
+const bodyParser = require("body-parser");
+const path = require("path");
 const dbo = require("./db");
-const { Collection } = require("mongodb");
-const { redirect, status } = require("express/lib/response");
-const urlencoded = require("body-parser/lib/types/urlencoded");
-const ObjectId = dbo.ObjectId;
-app.engine(
-  "hbs",
-  exhbs.engine({ layoutsDir: "views/", defaultLayout: "main", extname: "hbs" })
-);
-app.set("view engine", "hbs");
-app.set("views", "views");
+const { ObjectId } = require("mongodb");
 
-//app.use(bodyParser, bodyparser.urlencoded({ extended }));
-app.use(bodyparser.urlencoded({ extended: true }));
-app.get("/", async (req, res) => {
-  let database = await dbo.getDatabase();
-  const collection = database.collection("movie");
-  const cursor = collection.find();
-  let employees = await cursor.toArray();
-  let message = "";
-  let edit_id, edit_book, delete_id;
+const app = express();
 
-  if (req.query.edit_id) {
-    edit_id = req.query.edit_id;
-    edit_book = await collection.findOne({ _id: new ObjectId(edit_id) });
-  }
-  if (req.query.delete_id) {
-    delete_id = req.query.delete_id;
-    await collection.deleteOne({ _id: new ObjectId(delete_id) });
-    return res.redirect("/?status=3");
-  }
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public"))); // Serve static files
 
-  switch (req.query.status) {
-    case "1":
-      message = "Inserted Successfully";
-      break;
-    case "2":
-      message = "Updated Successfully";
-      break;
-
-    case "3":
-      message = "Deleted Successfully";
-      break;
-
-    default:
-      break;
-  }
-
-  res.render("main", {
-    message,
-    employees,
-    edit_id,
-    edit_book,
-    delete_id,
-  });
+// Serve index.html for frontend
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-app.post("/store_book", async (req, res) => {
-  let database = await dbo.getDatabase();
-  const collection = database.collection("movie");
-  let book = { title: req.body.title, author: req.body.author };
-  await collection.insertOne(book);
-  return res.redirect("/?status=1");
+// Get all tasks
+app.get("/api/tasks", async (req, res) => {
+  try {
+    let database = await dbo.getDatabase();
+    const collection = database.collection("tasks");
+    const tasks = await collection.find().toArray();
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
-app.post("/update_book/:edit_id", async (req, res) => {
-  let database = await dbo.getDatabase();
-  const collection = database.collection("movie");
-  let book = { title: req.body.title, author: req.body.author };
-  let edit_id = req.params.edit_id;
-
-  await collection.updateOne({ _id: new ObjectId(edit_id) }, { $set: book });
-  return res.redirect("/?status=2");
+// Add a new task
+app.post("/api/store_book", async (req, res) => {
+  try {
+    let database = await dbo.getDatabase();
+    const collection = database.collection("tasks");
+    let task = { title: req.body.title, author: req.body.author };
+    await collection.insertOne(task);
+    res.redirect("/");
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
-//module.exports=app;
+
+// Update a task
+app.post("/api/update_book/:edit_id", async (req, res) => {
+  try {
+    let database = await dbo.getDatabase();
+    const collection = database.collection("tasks");
+    let updatedTask = { title: req.body.title, author: req.body.author };
+    let edit_id = req.params.edit_id;
+
+    await collection.updateOne({ _id: new ObjectId(edit_id) }, { $set: updatedTask });
+    res.redirect("/");
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Delete a task
+app.get("/api/delete/:id", async (req, res) => {
+  try {
+    let database = await dbo.getDatabase();
+    const collection = database.collection("tasks");
+    await collection.deleteOne({ _id: new ObjectId(req.params.id) });
+    res.redirect("/");
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+module.exports = app;
