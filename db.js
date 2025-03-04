@@ -1,24 +1,21 @@
-const mongodb = require("mongodb");
-const mongoClient = mongodb.MongoClient;
-const ObjectId = mongodb.ObjectId;
+const { MongoClient, ObjectId } = require("mongodb");
+
+const uri = process.env.MONGO_URI || "mongodb+srv://dharunitguy:GlDgfDqA7FeopEv2@cluster0.lkuvr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Use .env for security
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
 let database;
-const uri =
-  "mongodb+srv://dharunitguy:GlDgfDqA7FeopEv2@cluster0.lkuvr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
-async function getDatabase() {
-  const client = await mongoClient.connect(uri);
-  database = client.db("office");
-
+async function connect() {
   if (!database) {
-    console.log("Database Not Connected");
+    await client.connect();
+    database = client.db("office"); // Replace with your actual database name
+    console.log("Connected to MongoDB Atlas");
   }
-
   return database;
 }
-module.exports = {
-  getDatabase,
-  ObjectId,
-};
 
-// mongo atlas pass:GlDgfDqA7FeopEv2
-// mongodb+srv://dharunitguy:<db_password>@cluster0.lkuvr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+async function getDatabase() {
+  return await connect();
+}
+
+module.exports = { getDatabase, ObjectId };
