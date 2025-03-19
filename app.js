@@ -9,7 +9,7 @@ const urlencoded = require("body-parser/lib/types/urlencoded");
 const ObjectId = dbo.ObjectId;
 app.engine(
   "hbs",
-  exhbs.engine({ layoutsDir: "views/", defaultLayout: "main", extname: "hbs" })
+  exhbs.engine({ layoutsDir: "views/", defaultLayout: "index", extname: "hbs" })
 );
 app.set("view engine", "hbs");
 app.set("views", "views");
